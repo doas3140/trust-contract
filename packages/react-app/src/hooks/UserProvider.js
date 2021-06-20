@@ -2,6 +2,7 @@ import { Web3Provider } from "@ethersproject/providers";
 import BurnerProvider from "burner-provider";
 import { useMemo } from "react";
 import { INFURA_ID } from "../constants";
+import {useLocalStorage} from '../hooks'
 
 /*
   ~ What it does? ~

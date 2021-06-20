@@ -5,6 +5,9 @@ import ReactDOM from "react-dom";
 import App from "./App";
 import "./index.css";
 
+import {Provider} from 'react-redux';
+import store from './redux/store';
+
 const themes = {
   dark: `${process.env.PUBLIC_URL}/dark-theme.css`,
   light: `${process.env.PUBLIC_URL}/light-theme.css`,
@@ -20,10 +23,12 @@ const client = new ApolloClient({
 });
 
 ReactDOM.render(
-  <ApolloProvider client={client}>
-    <ThemeSwitcherProvider themeMap={themes} defaultTheme={prevTheme || "light"}>
-      <App subgraphUri={subgraphUri} />
-    </ThemeSwitcherProvider>
-  </ApolloProvider>,
+  <Provider store={store}>
+    <ApolloProvider client={client}>
+      <ThemeSwitcherProvider themeMap={themes} defaultTheme={prevTheme || "light"}>
+        <App subgraphUri={subgraphUri} />
+      </ThemeSwitcherProvider>
+    </ApolloProvider>
+  </Provider>,
   document.getElementById("root"),
 );
