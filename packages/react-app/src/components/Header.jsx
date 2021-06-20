@@ -5,16 +5,11 @@ import WalletConnectProvider from "@walletconnect/web3-provider";
 import { useUserAddress } from "eth-hooks";
 import React, { useCallback, useEffect, useState } from "react";
 import { Account } from "../components";
-import {INFURA_ID} from "../constants";
-import {
-  useExchangePrice,
-  useUserProvider,
-  useGasPrice,
-  useBalance
-} from "../hooks";
-import {scaffoldEthProvider, mainnetInfura, targetNetwork, localProvider, blockExplorer} from '../App'
+import { INFURA_ID } from "../constants";
+import { useExchangePrice, useUserProvider, useGasPrice, useBalance } from "../hooks";
+import { scaffoldEthProvider, mainnetInfura, targetNetwork, localProvider, blockExplorer } from "../App";
 import { Transactor } from "../helpers";
-import { Button} from "antd";
+import { Button } from "antd";
 import { formatEther, parseEther } from "@ethersproject/units";
 import BurnerProvider from "burner-provider";
 import * as bip39 from "bip39";
@@ -24,9 +19,9 @@ import * as bip39 from "bip39";
 /*
   Web3 modal helps us "connect" external wallets:
 */
-function generateMnemonic(){
-  const mnemonic = bip39.generateMnemonic()
-  return mnemonic.split(' ').slice(0,3).join(' ')
+function generateMnemonic() {
+  const mnemonic = bip39.generateMnemonic();
+  return mnemonic.split(" ").slice(0, 3).join(" ");
 }
 
 const web3Modal = new Web3Modal({
@@ -43,12 +38,12 @@ const web3Modal = new Web3Modal({
       display: {
         logo: "/mnemonic.png",
         name: "Custom Mnemonic",
-        description: "Connect With Custom Mnemonic"
+        description: "Connect With Custom Mnemonic",
       },
       package: BurnerProvider,
       options: {},
       connector: async (ProviderPackage, options) => {
-        if(!localStorage.getItem("mnemonic")){
+        if (!localStorage.getItem("mnemonic")) {
           const mnemonic = prompt("Please enter mnemonic:", generateMnemonic());
           window.localStorage.clear();
           window.localStorage.setItem("mnemonic", mnemonic);
@@ -56,13 +51,13 @@ const web3Modal = new Web3Modal({
         }
         const provider = new ProviderPackage(options);
         return provider;
-      }
-    }
+      },
+    },
   },
 });
 
 const logoutOfWeb3Modal = async () => {
-  localStorage.clear()
+  localStorage.clear();
   await web3Modal.clearCachedProvider();
   setTimeout(() => {
     window.location.reload();
@@ -84,7 +79,7 @@ export default function Header() {
   const faucetTx = Transactor(localProvider, gasPrice);
   // 🏗 scaffold-eth is full of handy hooks like this one to get your balance:
   const yourLocalBalance = useBalance(localProvider, address);
-  
+
   const loadWeb3Modal = useCallback(async () => {
     const provider = await web3Modal.connect();
     setInjectedProvider(new Web3Provider(provider));
@@ -125,31 +120,25 @@ export default function Header() {
   }
 
   return (
-    <div style={{display: 'flex'}}>
-    <a href="https://github.com/austintgriffith/scaffold-eth" target="_blank" rel="noopener noreferrer">
-      <PageHeader
-        title="🤞 trust-contract"
-        subTitle=""
-        style={{ cursor: "pointer" }}
-      />
-    </a>
-    <div style={{flexGrow:1}}/>
-    <div style={{padding: 16}}>
-      <Account
-        address={address}
-        localProvider={localProvider}
-        userProvider={userProvider}
-        mainnetProvider={mainnetProvider}
-        price={price}
-        web3Modal={web3Modal}
-        loadWeb3Modal={loadWeb3Modal}
-        logoutOfWeb3Modal={logoutOfWeb3Modal}
-        blockExplorer={blockExplorer}
-      />
-    </div>
-    <div style={{ position: "fixed", textAlign: "right", right: 0, bottom: 50, padding: 10 }}>
-      {faucetHint}
-    </div>
+    <div style={{ display: "flex" }}>
+      <a target="_blank" rel="noopener noreferrer">
+        <PageHeader title="🤞 trust-contract" subTitle="" style={{ cursor: "pointer" }} />
+      </a>
+      <div style={{ flexGrow: 1 }} />
+      <div style={{ padding: 16 }}>
+        <Account
+          address={address}
+          localProvider={localProvider}
+          userProvider={userProvider}
+          mainnetProvider={mainnetProvider}
+          price={price}
+          web3Modal={web3Modal}
+          loadWeb3Modal={loadWeb3Modal}
+          logoutOfWeb3Modal={logoutOfWeb3Modal}
+          blockExplorer={blockExplorer}
+        />
+      </div>
+      <div style={{ position: "fixed", textAlign: "right", right: 0, bottom: 100, padding: 10 }}>{faucetHint}</div>
     </div>
   );
 }

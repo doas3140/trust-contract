@@ -22,8 +22,9 @@ import {
   useUserProvider,
 } from "./hooks";
 // import Hints from "./Hints";
-import { ExampleUI, Hints, Subgraph } from "./views";
+import { NamesView } from "./views";
 import { useSelector, useDispatch } from "react-redux";
+import {ReduxMain} from './redux/slice-main'
 
 /*
     Welcome to 🏗 scaffold-eth !
@@ -72,6 +73,7 @@ export const localProvider = new StaticJsonRpcProvider(localProviderUrlFromEnv);
 export const blockExplorer = targetNetwork.blockExplorer;
 
 function App(props) {
+  const dispatch = useDispatch();
   const mainnetProvider = scaffoldEthProvider && scaffoldEthProvider._network ? scaffoldEthProvider : mainnetInfura;
 
   const [injectedProvider, setInjectedProvider] = useState();
@@ -123,11 +125,11 @@ function App(props) {
     "0x34aA3F359A9D614239015126635CE7732c18fDF3",
   ]);
 
-  // keep track of a variable from the contract in the local React state:
-  const purpose = useContractReader(readContracts, "TrustContract", "purpose");
-
-  // 📟 Listen for broadcast events
-  const setPurposeEvents = useEventListener(readContracts, "TrustContract", "SetPurpose", localProvider, 1);
+  // Start fetching data
+  React.useEffect(() => {
+    if(!readContracts) return;
+    dispatch(ReduxMain.refreshUsers(readContracts))
+  }, [readContracts]);
 
   /*
   const addressFromENS = useResolveName(mainnetProvider, "austingriffith.eth");
@@ -177,7 +179,7 @@ function App(props) {
     const networkLocal = NETWORK(localChainId);
     if (selectedChainId === 1337 && localChainId === 31337) {
       networkDisplay = (
-        <div style={{ zIndex: 2, position: "absolute", right: 0, bottom: 60, padding: 16 }}>
+        <div style={{ zIndex: 2, position: "absolute", right: 0, bottom: 100, padding: 16 }}>
           <Alert
             message="⚠️ Wrong Network ID"
             description={
@@ -194,7 +196,7 @@ function App(props) {
       );
     } else {
       networkDisplay = (
-        <div style={{ zIndex: 2, position: "absolute", right: 0, bottom: 60, padding: 16 }}>
+        <div style={{ zIndex: 2, position: "absolute", right: 0, bottom: 100, padding: 16 }}>
           <Alert
             message="⚠️ Wrong Network"
             description={
@@ -212,7 +214,7 @@ function App(props) {
   } else {
     networkDisplay = (
       <div
-        style={{ zIndex: -1, position: "absolute", right: 154, bottom: 28, padding: 16, color: targetNetwork.color }}
+        style={{ zIndex: -1, position: "absolute", right: 50, bottom: 100, padding: 16, color: targetNetwork.color }}
       >
         {targetNetwork.name}
       </div>
@@ -225,9 +227,8 @@ function App(props) {
     <div className="App">
       {/* ✏️ Edit the header and change the title to your project name */}
       <Header />
-      {networkDisplay}
+      {DEBUG && networkDisplay}
       <BrowserRouter>
-
         <Switch>
           <Route exact path="/">
             {/*
@@ -265,46 +266,8 @@ function App(props) {
             />
             */}
           </Route>
-          <Route path="/hints">
-            <Hints
-              address={address}
-              yourLocalBalance={yourLocalBalance}
-              mainnetProvider={mainnetProvider}
-              price={price}
-            />
-          </Route>
-          <Route path="/exampleui">
-            <ExampleUI
-              address={address}
-              userProvider={userProvider}
-              mainnetProvider={mainnetProvider}
-              localProvider={localProvider}
-              yourLocalBalance={yourLocalBalance}
-              price={price}
-              tx={tx}
-              writeContracts={writeContracts}
-              readContracts={readContracts}
-              purpose={purpose}
-              setPurposeEvents={setPurposeEvents}
-            />
-          </Route>
-          <Route path="/mainnetdai">
-            <Contract
-              name="DAI"
-              customContract={mainnetDAIContract}
-              signer={userProvider.getSigner()}
-              provider={mainnetProvider}
-              address={address}
-              blockExplorer="https://etherscan.io/"
-            />
-          </Route>
-          <Route path="/subgraph">
-            <Subgraph
-              subgraphUri={props.subgraphUri}
-              tx={tx}
-              writeContracts={writeContracts}
-              mainnetProvider={mainnetProvider}
-            />
+          <Route path="/names">
+            <NamesView readContracts={readContracts} />
           </Route>
         </Switch>
 

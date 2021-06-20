@@ -1,23 +1,31 @@
 pragma solidity >=0.6.0 <0.9.0;
+
 //SPDX-License-Identifier: MIT
 
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 //import "@openzeppelin/contracts/access/Ownable.sol"; //https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol
 
 contract TrustContract {
+    constructor() {}
 
-  event SetPurpose(address sender, string purpose);
+    // Joining network
+    event JoinNetwork(address sender, string name);
 
-  string public purpose = "Building Unstoppable Apps";
+    mapping(string => address) public name2address;
+    mapping(string => bool) public name2exists;
+    mapping(address => bool) public address2exists;
+    string[] public names;
 
-  constructor() {
-    // what should we do on deploy?
-  }
+    function getUserCount() public view returns (uint256 count) {
+        return names.length;
+    }
 
-  function setPurpose(string memory newPurpose) public {
-    purpose = newPurpose;
-    console.log(msg.sender,"set purpose to",purpose);
-    emit SetPurpose(msg.sender, purpose);
-  }
-
+    function joinNetwork(string memory name) public {
+        require(!name2exists[name], "name already exist");
+        require(!address2exists[msg.sender], "already signed");
+        names.push(name);
+        name2exists[name] = true;
+        name2address[name] = msg.sender;
+        emit JoinNetwork(msg.sender, name);
+    }
 }
