@@ -4,7 +4,7 @@ pragma solidity >=0.6.0 <0.9.0;
 import "hardhat/console.sol";
 //import "@openzeppelin/contracts/access/Ownable.sol"; //https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol
 
-contract YourContract {
+contract TrustContract {
 
   event SetPurpose(address sender, string purpose);
 

@@ -3,11 +3,11 @@ schema:
   file: ./src/schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: YourContract
+    name: TrustContract
     network: localhost
     source:
-      address: '{{YourContractAddress}}'
-      abi: YourContract
+      address: '{{TrustContractAddress}}'
+      abi: TrustContract
       startBlock: 1
     mapping:
       kind: ethereum/events
@@ -17,8 +17,8 @@ dataSources:
         - Purpose
         - Sender
       abis:
-        - name: YourContract
-          file: ./abis/YourContract.json
+        - name: TrustContract
+          file: ./abis/TrustContract.json
       eventHandlers:
         - event: SetPurpose(address,string)
           handler: handleSetPurpose

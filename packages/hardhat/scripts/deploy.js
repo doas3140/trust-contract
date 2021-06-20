@@ -9,9 +9,9 @@ const main = async () => {
 
   console.log("\n\n 📡 Deploying...\n");
 
-  const yourContract = await deploy("YourContract") // <-- add in constructor args like line 19 vvvv
+  const TrustContract = await deploy("TrustContract") // <-- add in constructor args like line 19 vvvv
 
-  //const yourContract = await ethers.getContractAt('YourContract', "0xaAC799eC2d00C013f1F11c37E654e59B0429DF6A") //<-- if you want to instantiate a version of a contract at a specific address!
+  //const TrustContract = await ethers.getContractAt('TrustContract', "0xaAC799eC2d00C013f1F11c37E654e59B0429DF6A") //<-- if you want to instantiate a version of a contract at a specific address!
   //const secondContract = await deploy("SecondContract")
 
   // const exampleToken = await deploy("ExampleToken")
@@ -30,7 +30,7 @@ const main = async () => {
 
   /*
   //If you want to send some ETH to a contract on deploy (make your constructor payable!)
-  const yourContract = await deploy("YourContract", [], {
+  const TrustContract = await deploy("TrustContract", [], {
   value: ethers.utils.parseEther("0.05")
   });
   */
@@ -39,7 +39,7 @@ const main = async () => {
   /*
   //If you want to link a library into your contract:
   // reference: https://github.com/austintgriffith/scaffold-eth/blob/using-libraries-example/packages/hardhat/scripts/deploy.js#L19
-  const yourContract = await deploy("YourContract", [], {}, {
+  const TrustContract = await deploy("TrustContract", [], {}, {
    LibraryName: **LibraryAddress**
   });
   */
@@ -48,8 +48,8 @@ const main = async () => {
   //If you want to verify your contract on tenderly.co (see setup details in the scaffold-eth README!)
   /*
   await tenderlyVerify(
-    {contractName: "YourContract",
-     contractAddress: yourContract.address
+    {contractName: "TrustContract",
+     contractAddress: TrustContract.address
   })
   */
 
@@ -57,8 +57,8 @@ const main = async () => {
   /*
   console.log(chalk.blue('verifying on etherscan'))
   await run("verify:verify", {
-    address: yourContract.address,
-    // contract: "contracts/Example.sol:ExampleContract" // If you are inheriting from multiple contracts in yourContract.sol, you can specify which to verify
+    address: TrustContract.address,
+    // contract: "contracts/Example.sol:ExampleContract" // If you are inheriting from multiple contracts in TrustContract.sol, you can specify which to verify
     // constructorArguments: args // If your contract has constructor arguments, you can pass them as an array
   })
   */

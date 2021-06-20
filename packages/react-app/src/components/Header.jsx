@@ -46,9 +46,7 @@ const web3Modal = new Web3Modal({
         description: "Connect With Custom Mnemonic"
       },
       package: BurnerProvider,
-      options: {
-        mnemonic: 'sad asdasd asd'
-      },
+      options: {},
       connector: async (ProviderPackage, options) => {
         if(!localStorage.getItem("mnemonic")){
           const mnemonic = prompt("Please enter mnemonic:", generateMnemonic());

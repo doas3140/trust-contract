@@ -14,12 +14,12 @@ import { useEffect, useState } from "react";
 
   ~ How can I use? ~
 
-  const customContract = useCustomContractLoader(localProvider, "YourContract", customAddress)
+  const customContract = useCustomContractLoader(localProvider, "TrustContract", customAddress)
 
   ~ Features ~
 
   - Specify the localProvider
-  - Specify the name of the contract, in this case it is "YourContract"
+  - Specify the name of the contract, in this case it is "TrustContract"
   - Specify the customAddress of your contract
 */
 
