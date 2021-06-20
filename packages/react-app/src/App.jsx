@@ -23,6 +23,8 @@ import {
 } from "./hooks";
 // import Hints from "./Hints";
 import { ExampleUI, Hints, Subgraph } from "./views";
+import {useSelector, useDispatch} from 'react-redux'
+
 /*
     Welcome to 🏗 scaffold-eth !
 
@@ -221,6 +223,8 @@ function App(props) {
   }, [setRoute]);
 
   const faucetAvailable = localProvider && localProvider.connection && targetNetwork.name === "localhost";
+
+  const {mnemonic} = useSelector(state => state.main)
 
   return (
     <div className="App">

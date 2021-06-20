@@ -16,12 +16,19 @@ import {scaffoldEthProvider, mainnetInfura, targetNetwork, localProvider, blockE
 import { Transactor } from "../helpers";
 import { Button} from "antd";
 import { formatEther, parseEther } from "@ethersproject/units";
+import BurnerProvider from "burner-provider";
+import * as bip39 from "bip39";
 
 // displays a page header
 
 /*
   Web3 modal helps us "connect" external wallets:
 */
+function generateMnemonic(){
+  const mnemonic = bip39.generateMnemonic()
+  return mnemonic.split(' ').slice(0,3).join(' ')
+}
+
 const web3Modal = new Web3Modal({
   // network: "mainnet", // optional
   cacheProvider: true, // optional
@@ -32,10 +39,32 @@ const web3Modal = new Web3Modal({
         infuraId: INFURA_ID,
       },
     },
+    "custom-mnemonic": {
+      display: {
+        logo: "/mnemonic.png",
+        name: "Custom Mnemonic",
+        description: "Connect With Custom Mnemonic"
+      },
+      package: BurnerProvider,
+      options: {
+        mnemonic: 'sad asdasd asd'
+      },
+      connector: async (ProviderPackage, options) => {
+        if(!localStorage.getItem("mnemonic")){
+          const mnemonic = prompt("Please enter mnemonic:", generateMnemonic());
+          window.localStorage.clear();
+          window.localStorage.setItem("mnemonic", mnemonic);
+          window.location.reload();
+        }
+        const provider = new ProviderPackage(options);
+        return provider;
+      }
+    }
   },
 });
 
 const logoutOfWeb3Modal = async () => {
+  localStorage.clear()
   await web3Modal.clearCachedProvider();
   setTimeout(() => {
     window.location.reload();

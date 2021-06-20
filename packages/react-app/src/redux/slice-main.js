@@ -1,9 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {};
+const initialState = {
+};
 
 const slice = createSlice({
-  name: "auth",
+  name: "main",
   initialState,
   reducers: {
     setState(state, action) {
@@ -13,7 +14,7 @@ const slice = createSlice({
   },
 });
 
-export const ReduxAuth = {
+export const ReduxMain = {
   reducer: slice.reducer,
   ...slice.actions,
 };

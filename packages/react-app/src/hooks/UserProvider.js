@@ -30,27 +30,30 @@ const useUserProvider = (injectedProvider, localProvider) =>
     }
     if (!localProvider) return undefined;
 
-    const burnerConfig = {};
+    const burnerConfig = {
+      mnemonic: localStorage.getItem("mnemonic")
+    };
 
-    if (window.location.pathname) {
-      if (window.location.pathname.indexOf("/pk") >= 0) {
-        const incomingPK = window.location.hash.replace("#", "");
-        let rawPK;
-        if (incomingPK.length === 64 || incomingPK.length === 66) {
-          console.log("🔑 Incoming Private Key...");
-          rawPK = incomingPK;
-          burnerConfig.privateKey = rawPK;
-          window.history.pushState({}, "", "/");
-          const currentPrivateKey = window.localStorage.getItem("metaPrivateKey");
-          if (currentPrivateKey && currentPrivateKey !== rawPK) {
-            window.localStorage.setItem("metaPrivateKey_backup" + Date.now(), currentPrivateKey);
-          }
-          window.localStorage.setItem("metaPrivateKey", rawPK);
-        }
-      }
-    }
+    // if (window.location.pathname) {
+    //   if (window.location.pathname.indexOf("/pk") >= 0) {
+    //     const incomingPK = window.location.hash.replace("#", "");
+    //     let rawPK;
+    //     if (incomingPK.length === 64 || incomingPK.length === 66) {
+    //       console.log("🔑 Incoming Private Key...");
+    //       rawPK = incomingPK;
+    //       burnerConfig.privateKey = rawPK;
+    //       window.history.pushState({}, "", "/");
+    //       const currentPrivateKey = window.localStorage.getItem("metaPrivateKey");
+    //       if (currentPrivateKey && currentPrivateKey !== rawPK) {
+    //         window.localStorage.setItem("metaPrivateKey_backup" + Date.now(), currentPrivateKey);
+    //       }
+    //       window.localStorage.setItem("metaPrivateKey", rawPK);
+    //     }
+    //   }
+    // }
 
     console.log("🔥 Using burner provider", burnerConfig);
+    console.log("🔥 burner url:", localProvider.connection && localProvider.connection.url)
     if (localProvider.connection && localProvider.connection.url) {
       burnerConfig.rpcUrl = localProvider.connection.url;
       return new Web3Provider(new BurnerProvider(burnerConfig));
