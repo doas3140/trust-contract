@@ -4,6 +4,7 @@ import Blockies from "react-blockies";
 import { useThemeSwitcher } from "react-css-theme-switcher";
 import { useLookupAddress } from "../hooks";
 
+
 // changed value={address} to address={address}
 
 /*
@@ -35,7 +36,7 @@ const blockExplorerLink = (address, blockExplorer) =>
   `${blockExplorer || "https://etherscan.io/"}${"address/"}${address}`;
 
 export default function Address(props) {
-  const address = props.value || props.address;
+  const address = props.address;
 
   const ens = useLookupAddress(props.ensProvider, address);
 
@@ -85,7 +86,7 @@ export default function Address(props) {
           href={etherscanLink}
           rel="noopener noreferrer"
         >
-          {displayAddress}
+          {props.value || displayAddress}
         </a>
       </Text>
     );
@@ -98,7 +99,7 @@ export default function Address(props) {
           href={etherscanLink}
           rel="noopener noreferrer"
         >
-          {displayAddress}
+          {props.value || displayAddress}
         </a>
       </Text>
     );

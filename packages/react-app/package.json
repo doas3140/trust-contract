@@ -42,6 +42,7 @@
     "bip39": "^3.0.4",
     "bnc-notify": "^1.5.0",
     "burner-provider": "^1.0.38",
+    "cryptocurrency-icons": "^0.17.2",
     "dotenv": "^8.2.0",
     "eth-hooks": "^1.1.2",
     "ethers": "^5.0.31",

@@ -1,6 +1,7 @@
 import { formatEther } from "@ethersproject/units";
 import React, { useState } from "react";
 import { useBalance } from "../hooks";
+import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 
 /*
   ~ What it does? ~
@@ -61,18 +62,20 @@ export default function Balance(props) {
   }
 
   return (
-    <span
-      style={{
-        verticalAlign: "middle",
-        fontSize: props.size ? props.size : 24,
-        padding: 8,
-        cursor: "pointer",
-      }}
-      onClick={() => {
-        setDollarMode(!dollarMode);
-      }}
-    >
-      {displayBalance}
-    </span>
+    <div style={{ display: "flex", flexDirection: "column" }}>
+      <span
+        style={{
+          verticalAlign: "middle",
+          fontSize: 12,
+          cursor: "pointer",
+          color: 'black'
+        }}
+        onClick={() => {
+          setDollarMode(!dollarMode);
+        }}
+      >
+        {displayBalance}
+      </span>
+    </div>
   );
 }

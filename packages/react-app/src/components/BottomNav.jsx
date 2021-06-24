@@ -3,21 +3,24 @@ import React from "react";
 import BottomNavigation from "@material-ui/core/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
 import { Restore } from "@material-ui/icons";
-import {Code, Group} from '@material-ui/icons';
-
+import { Code, Group } from "@material-ui/icons";
+import { useThemeSwitcher } from "react-css-theme-switcher";
 import { useLocation, useHistory } from "react-router-dom";
 
 export const Hidden = props => <div style={{ visibility: "hidden" }}>{props.children}</div>;
 
-const style = {
-  position: "fixed",
-  width: "100vw",
-  bottom: 0
-}
-
 export default function BottomNav() {
   const location = useLocation();
   const history = useHistory();
+  const { currentTheme } = useThemeSwitcher();
+
+  const style = {
+    position: "fixed",
+    width: "100vw",
+    bottom: 0,
+    backgroundColor: currentTheme == "light" ? "white" : "#222222",
+    color: 'white'
+  };
 
   return (
     <>

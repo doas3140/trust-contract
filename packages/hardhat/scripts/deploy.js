@@ -88,6 +88,8 @@ const deploy = async (contractName, _args = [], overrides = {}, libraries = {}) 
   console.log(
     " 📄",
     chalk.cyan(contractName),
+    "deployed from:",
+    chalk.green(deployed.signer.address),
     "deployed to:",
     chalk.magenta(deployed.address)
   );

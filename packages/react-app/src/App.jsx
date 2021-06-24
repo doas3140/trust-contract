@@ -24,7 +24,14 @@ import {
 // import Hints from "./Hints";
 import { NamesView } from "./views";
 import { useSelector, useDispatch } from "react-redux";
-import {ReduxMain} from './redux/slice-main'
+import { ReduxMain } from "./redux/slice-main";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import TextField from "@material-ui/core/TextField";
+import Paper from "@material-ui/core/Paper";
+import InputBase from "@material-ui/core/InputBase";
+import Divider from "@material-ui/core/Divider";
+import MuiButton from "@material-ui/core/Button";
+import { notification } from "antd";
 
 /*
     Welcome to 🏗 scaffold-eth !
@@ -127,8 +134,10 @@ function App(props) {
 
   // Start fetching data
   React.useEffect(() => {
-    if(!readContracts) return;
-    dispatch(ReduxMain.refreshUsers(readContracts))
+    if (!readContracts) return;
+    dispatch(ReduxMain.refreshUsers(readContracts));
+    dispatch(ReduxMain.refreshMyUser(readContracts, address));
+    dispatch(ReduxMain.refreshBank(readContracts));
   }, [readContracts]);
 
   /*
@@ -172,6 +181,8 @@ function App(props) {
     writeContracts,
     mainnetDAIContract,
   ]);
+
+  const { user } = useSelector(state => state.main);
 
   let networkDisplay = "";
   if (localChainId && selectedChainId && localChainId !== selectedChainId) {
@@ -221,6 +232,8 @@ function App(props) {
     );
   }
 
+  const [inp, setInp] = React.useState("");
+
   const faucetAvailable = localProvider && localProvider.connection && targetNetwork.name === "localhost";
 
   return (
@@ -228,24 +241,32 @@ function App(props) {
       {/* ✏️ Edit the header and change the title to your project name */}
       <Header />
       {DEBUG && networkDisplay}
-      <BrowserRouter>
-        <Switch>
-          <Route exact path="/">
-            {/*
+
+      {user.loading ? (
+        <div
+          style={{ height: "100vh", width: "100vw", display: "flex", alignItems: "center", justifyContent: "center" }}
+        >
+          <CircularProgress />
+        </div>
+      ) : user.name ? (
+        <BrowserRouter>
+          <Switch>
+            <Route exact path="/">
+              {/*
                 🎛 this scaffolding is full of commonly used components
                 this <Contract/> component will automatically parse your ABI
                 and give you a form to interact with it locally
             */}
 
-            <Contract
-              name="TrustContract"
-              signer={userProvider.getSigner()}
-              provider={localProvider}
-              address={address}
-              blockExplorer={blockExplorer}
-            />
+              <Contract
+                name="TrustContract"
+                signer={userProvider.getSigner()}
+                provider={localProvider}
+                address={address}
+                blockExplorer={blockExplorer}
+              />
 
-            {/* uncomment for a second contract:
+              {/* uncomment for a second contract:
             <Contract
               name="SecondContract"
               signer={userProvider.getSigner()}
@@ -255,7 +276,7 @@ function App(props) {
             />
             */}
 
-            {/* Uncomment to display and interact with an external contract (DAI on mainnet):
+              {/* Uncomment to display and interact with an external contract (DAI on mainnet):
             <Contract
               name="DAI"
               customContract={mainnetDAIContract}
@@ -265,14 +286,56 @@ function App(props) {
               blockExplorer={blockExplorer}
             />
             */}
-          </Route>
-          <Route path="/names">
-            <NamesView readContracts={readContracts} />
-          </Route>
-        </Switch>
+            </Route>
+            <Route path="/names">
+              <NamesView readContracts={readContracts} />
+            </Route>
+          </Switch>
 
-        <BottomNav />
-      </BrowserRouter>
+          <BottomNav />
+        </BrowserRouter>
+      ) : (
+        <div
+          style={{
+            height: "calc(100vh - 100px)",
+            flexDirection: "column",
+            width: "100vw",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          Your account is not initialized!
+          <Paper
+            component="form"
+            style={{ marginTop: 10, padding: "2px 4px", display: "flex", alignItems: "center", width: 400 }}
+          >
+            <InputBase
+              value={inp}
+              onChange={e => setInp(e.target.value)}
+              placeholder="Enter your name"
+              style={{ marginLeft: 4, flex: 1 }}
+            />
+            <Divider orientation="vertical" style={{ height: 28, margin: 4 }} />
+            <MuiButton
+              onClick={async () => {
+                try {
+                  await writeContracts.TrustContract.joinNetwork(inp);
+                  dispatch(ReduxMain.refreshMyUser(readContracts, address));
+                } catch (e) {
+                  notification.error({
+                    message: "Transaction Error",
+                    description: e.message.replace("VM Exception while processing transaction: revert", ""),
+                  });
+                }
+                // readContracts.TrustContract.name2address(props.name).then(setAddress);
+              }}
+            >
+              JOIN
+            </MuiButton>
+          </Paper>
+        </div>
+      )}
 
       <ThemeSwitch />
 

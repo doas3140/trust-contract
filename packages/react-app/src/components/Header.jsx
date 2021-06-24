@@ -13,6 +13,12 @@ import { Button } from "antd";
 import { formatEther, parseEther } from "@ethersproject/units";
 import BurnerProvider from "burner-provider";
 import * as bip39 from "bip39";
+import { useThemeSwitcher } from "react-css-theme-switcher";
+import AppBar from "@material-ui/core/AppBar";
+import Blockies from "react-blockies";
+import { useSelector, useDispatch } from "react-redux";
+
+export const Hidden = props => <div style={{ visibility: "hidden" }}>{props.children}</div>;
 
 // displays a page header
 
@@ -80,6 +86,8 @@ export default function Header() {
   // 🏗 scaffold-eth is full of handy hooks like this one to get your balance:
   const yourLocalBalance = useBalance(localProvider, address);
 
+  const { user } = useSelector(state => state.main);
+
   const loadWeb3Modal = useCallback(async () => {
     const provider = await web3Modal.connect();
     setInjectedProvider(new Web3Provider(provider));
@@ -119,27 +127,54 @@ export default function Header() {
     );
   }
 
+  const { currentTheme } = useThemeSwitcher();
+
   return (
-    <div style={{ display: "flex" }}>
-      <a target="_blank" rel="noopener noreferrer">
-        <PageHeader title="🤞 trust-contract" subTitle="" style={{ cursor: "pointer" }} />
-      </a>
-      <div style={{ flexGrow: 1 }} />
-      <div style={{ padding: 16 }}>
-        <Account
-          address={address}
-          localProvider={localProvider}
-          userProvider={userProvider}
-          mainnetProvider={mainnetProvider}
-          price={price}
-          web3Modal={web3Modal}
-          loadWeb3Modal={loadWeb3Modal}
-          logoutOfWeb3Modal={logoutOfWeb3Modal}
-          blockExplorer={blockExplorer}
-        />
-      </div>
-      <div style={{ position: "fixed", textAlign: "right", right: 0, bottom: 100, padding: 10 }}>{faucetHint}</div>
-    </div>
+    <>
+      <Hidden>
+        <AppBar position="relative" style={{height:80}}>
+        </AppBar>
+      </Hidden>
+      <AppBar
+        style={{
+          zIndex: 1000,
+          backgroundColor: currentTheme == "light" ? "white" : "#222222",
+        }}
+      >
+        <div style={{ display: "flex" }}>
+          {/* <div
+        style={{
+          display: "flex",
+          position: "fixed",
+          top: 0,
+          width: "100vw",
+          zIndex: 99999,
+          // backgroundColor: currentTheme == "light" ? "white" : "black",
+        }}
+      > */}
+          <a target="_blank" rel="noopener noreferrer">
+            <PageHeader title="🤞 trust-contract" subTitle="" style={{ cursor: "pointer" }} />
+          </a>
+          <div style={{ flexGrow: 1 }} />
+          <div style={{ padding: 16 }}>
+            <Account
+              value={user.name}
+              address={address}
+              localProvider={localProvider}
+              userProvider={userProvider}
+              mainnetProvider={mainnetProvider}
+              price={price}
+              web3Modal={web3Modal}
+              loadWeb3Modal={loadWeb3Modal}
+              logoutOfWeb3Modal={logoutOfWeb3Modal}
+              blockExplorer={blockExplorer}
+            />
+          </div>
+          <div style={{ position: "fixed", textAlign: "right", right: 0, bottom: 100, padding: 10 }}>{faucetHint}</div>
+          {/* </div> */}
+        </div>
+      </AppBar>
+    </>
   );
 }
 

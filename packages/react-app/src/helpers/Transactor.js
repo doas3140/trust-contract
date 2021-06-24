@@ -100,7 +100,7 @@ export default function Transactor(provider, gasPrice, etherscan) {
         console.log("Transaction Error:", e.message);
         notification.error({
           message: "Transaction Error",
-          description: e.message,
+          description: e.message.replace("VM Exception while processing transaction: revert", ""),
         });
         if (callback && typeof callback === "function") {
           callback(e);
