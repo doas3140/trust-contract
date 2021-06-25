@@ -15,10 +15,11 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 
 const Item = props => {
-  const [address, setAddress] = React.useState();
-  React.useEffect(() => {
-    props.readContracts.TrustContract.name2address(props.name).then(setAddress);
-  }, []);
+  const address = props.address;
+  // const [address, setAddress] = React.useState();
+  // React.useEffect(() => {
+  //   props.readContracts.TrustContract.name2address(props.name).then(setAddress);
+  // }, []);
 
   return (
     <ListItem style={{ position: "relative" }} onClick={() => console.log(props.name)}>
@@ -32,12 +33,12 @@ const Item = props => {
 };
 
 export default function NamesView(props) {
-  const { names } = useSelector(state => state.main);
+  const { users } = useSelector(state => state.main);
   return (
     <Container maxWidth="md">
       <List>
-        {names.map(name => (
-          <Item key={name} name={name} {...props} />
+        {users.map(({ name, address }) => (
+          <Item key={name} name={name} address={address} {...props} />
         ))}
       </List>
     </Container>

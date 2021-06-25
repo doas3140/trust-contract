@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  names: [],
+  users: [],
   user: {},
 };
 
@@ -16,16 +16,16 @@ const slice = createSlice({
   },
 });
 
-const refreshUsers = ({ TrustContract }) => async dispatch => {
-  let names = [];
-  const count = await TrustContract.getUserCount();
-  for (let i = count - 1; i >= 0; i--) {
-    const name = await TrustContract.names(i);
-    console.log("[redux:name]", name);
-    names = [...names, name];
-    dispatch(slice.actions.setState({ names }));
-  }
-};
+// const refreshUsers = ({ TrustContract }) => async dispatch => {
+//   let names = [];
+//   const count = await TrustContract.getUserCount();
+//   for (let i = count - 1; i >= 0; i--) {
+//     const name = await TrustContract.names(i);
+//     console.log("[redux:name]", name);
+//     names = [...names, name];
+//     dispatch(slice.actions.setState({ names }));
+//   }
+// };
 
 const refreshMyUser = ({ TrustContract }, address) => async dispatch => {
   dispatch(slice.actions.setState({ user: { address, loading: true } }));
@@ -47,7 +47,7 @@ const refreshBank = ({ TrustContract }) => async dispatch => {
 export const ReduxMain = {
   reducer: slice.reducer,
   ...slice.actions,
-  refreshUsers,
+  // refreshUsers,
   refreshMyUser,
   refreshBank,
 };

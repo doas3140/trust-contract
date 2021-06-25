@@ -22,7 +22,7 @@ import {
   useUserProvider,
 } from "./hooks";
 // import Hints from "./Hints";
-import { NamesView } from "./views";
+import { NamesView, ContractsExampleView, ContractsView } from "./views";
 import { useSelector, useDispatch } from "react-redux";
 import { ReduxMain } from "./redux/slice-main";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -132,10 +132,16 @@ function App(props) {
     "0x34aA3F359A9D614239015126635CE7732c18fDF3",
   ]);
 
+  const joiners = useEventListener(readContracts, "TrustContract", "JoinNetwork", localProvider, 1);
+  const users = joiners.map(o => ({ address: o[0], name: o[1] }));
   // Start fetching data
   React.useEffect(() => {
+    dispatch(ReduxMain.setState({ users }));
+  }, [joiners.length]);
+
+  React.useEffect(() => {
     if (!readContracts) return;
-    dispatch(ReduxMain.refreshUsers(readContracts));
+    // dispatch(ReduxMain.refreshUsers(readContracts));
     dispatch(ReduxMain.refreshMyUser(readContracts, address));
     dispatch(ReduxMain.refreshBank(readContracts));
   }, [readContracts]);
@@ -290,6 +296,12 @@ function App(props) {
             <Route path="/names">
               <NamesView readContracts={readContracts} />
             </Route>
+            <Route path="/contracts">
+              <ContractsView readContracts={readContracts} />
+            </Route>
+            <Route path="/contracts-example">
+              <ContractsExampleView readContracts={readContracts} />
+            </Route>
           </Switch>
 
           <BottomNav />
@@ -320,6 +332,7 @@ function App(props) {
             <MuiButton
               onClick={async () => {
                 try {
+                  console.log("[", readContracts.TrustContract.on);
                   await writeContracts.TrustContract.joinNetwork(inp);
                   dispatch(ReduxMain.refreshMyUser(readContracts, address));
                 } catch (e) {
