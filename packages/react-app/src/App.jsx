@@ -20,6 +20,7 @@ import {
   useGasPrice,
   useOnBlock,
   useUserProvider,
+  useContractUpdateListener
 } from "./hooks";
 // import Hints from "./Hints";
 import { NamesView, ContractsExampleView, ContractsView } from "./views";
@@ -134,6 +135,8 @@ function App(props) {
 
   const joiners = useEventListener(readContracts, "TrustContract", "JoinNetwork", localProvider, 1);
   const users = joiners.map(o => ({ address: o[0], name: o[1] }));
+
+  const updates = useContractUpdateListener(readContracts, localProvider);
   // Start fetching data
   React.useEffect(() => {
     dispatch(ReduxMain.setState({ users }));
