@@ -136,6 +136,7 @@ contract TrustContract {
     );
 
     function emitContractUpdate(TContract memory c) private {
+        id2contract[c.id] = c;
         emit ContractUpdate({
             id: c.id,
             // participants & values
@@ -168,10 +169,9 @@ contract TrustContract {
                 value * 2 + info.MIN_BANK,
             "bank is empty"
         );
-        address2balance[msg.sender] -= value;
         TContract memory c = TContract({
             id: contractsCount,
-            creator: Creator({_address: msg.sender, oldBalance: address2balance[msg.sender], balanceChange: 0, toSteal: false}),
+            creator: Creator({_address: msg.sender, oldBalance: address2balance[msg.sender], balanceChange: -int256(value), toSteal: false}),
             acceptor: Acceptor({
                 _address: address(0),
                 oldBalance: 0,
@@ -183,10 +183,96 @@ contract TrustContract {
             exists: true,
             step: 1
         });
-        id2contract[c.id] = c;
+        address2balance[msg.sender] -= value;
+        address2balance[name2address[info.bank]] += value;
+        emitContractUpdate(c);
         address2contractids[msg.sender].push(c.id);
         address2contractcount[msg.sender] += 1;
-        emitContractUpdate(c);
         contractsCount += 1;
+    }
+
+    // Trust Contract Functions
+
+    function acceptorAcceptContract(
+        uint256 id, // index of contract
+        bool toSteal,
+        string memory random
+    ) public {
+        TContract memory c = id2contract[id];
+        require(address2balance[msg.sender] > c.value, "not enough funds");
+        require(c.exists, "contract not found");
+        require(c.step == 1, "steps must be in order");
+        require(msg.sender != c.creator._address, "cannot be creator");
+        c.acceptor = Acceptor({
+            _address: msg.sender,
+            oldBalance: address2balance[msg.sender],
+            balanceChange: -int256(c.value),
+            toSteal: false,
+            actionHash: sha256(abi.encode(toSteal, random))
+        });
+        c.step = 2;
+        address2balance[msg.sender] -= c.value;
+        address2balance[name2address[info.bank]] += c.value;
+        emitContractUpdate(c);
+        // (bool toSteal, string memory random) = abi.decode(abi.encode(toSteal, random), (bool, string));
+    }
+
+    function creatorPublishAction(
+        uint256 id, // index of contract,
+        bool toSteal
+    ) public {
+        TContract memory c = id2contract[id];
+        require(c.exists, "contract not found");
+        require(c.step == 2, "steps must be in order");
+        require(msg.sender == c.creator._address, "must be creator");
+        c.creator.toSteal = toSteal;
+        c.step = 3;
+        emitContractUpdate(c);
+    }
+
+    function acceptorVerifyAction(
+        uint256 id, // index of contract,
+        bool toSteal,
+        string memory random
+    ) public {
+        TContract memory c = id2contract[id];
+        require(c.exists, "contract not found");
+        require(c.step == 3, "steps must be in order");
+        require(msg.sender == c.acceptor._address, "must be acceptor");
+        require(sha256(abi.encode(toSteal, random)) == c.acceptor.actionHash, "wrong passphrase or action");
+        c.acceptor.toSteal = toSteal;
+        c.step = 4;
+        // End Game
+        address creator = c.creator._address;
+        address acceptor = c.acceptor._address;
+        address bank = name2address[info.bank];
+        if (!c.creator.toSteal && !c.acceptor.toSteal) {
+            uint gainedValue = c.value;
+            uint change = c.value + gainedValue;
+            c.acceptor.balanceChange = int256(change);
+            c.creator.balanceChange = int256(change);
+            address2balance[creator] += change;
+            address2balance[acceptor] += change;
+            address2balance[bank] -= change*2;
+        } else if (c.creator.toSteal && !c.acceptor.toSteal) {
+            uint change = c.value*2;
+            c.acceptor.balanceChange = -int256(c.value);
+            c.creator.balanceChange = int256(change);
+            address2balance[creator] += change;
+            address2balance[bank] -= change;
+        } else if (!c.creator.toSteal && c.acceptor.toSteal) {
+            uint change = c.value*2;
+            c.creator.balanceChange = -int256(c.value);
+            c.acceptor.balanceChange = int256(change);
+            address2balance[acceptor] += change;
+            address2balance[bank] -= change;
+        } else {
+            // c.creator.toSteal && c.acceptor.toSteal
+            uint change = c.value;
+            address2balance[creator] += change;
+            address2balance[acceptor] += change;
+            address2balance[bank] -= change*2;
+        }
+        emitContractUpdate(c);
     }
 }

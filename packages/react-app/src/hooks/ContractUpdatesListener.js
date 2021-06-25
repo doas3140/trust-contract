@@ -10,7 +10,7 @@ export default function useContractUpdateListener(readContracts, localProvider) 
   const updates = useEventListener(readContracts, "TrustContract", "ContractUpdate", localProvider, 1);
   React.useEffect(() => {
     const c = {};
-    for (const u of updates) {
+    for (const u of updates.reverse()) {
       c[Number(u.id)] = {
         id: Number(u.id),
         value: Number(u.value),
@@ -19,13 +19,13 @@ export default function useContractUpdateListener(readContracts, localProvider) 
           address: u.creator,
           oldBalance: Number(u.creatorOldBalance),
           balanceChange: u.step > 3 && Number(u.creatorBalanceChange),
-          action: u.step > 1 && (u.creatorToSteal ? "steal" : "coop"),
+          action: u.step > 2 && (u.creatorToSteal ? "steal" : "coop"),
         },
         acceptor: u.step > 1 && {
           address: u.acceptor,
           oldBalance: Number(u.acceptorOldBalance),
           balanceChange: u.step > 3 && Number(u.acceptorBalanceChange),
-          action: u.acceptorToSteal ? "steal" : "coop",
+          action: u.step < 4 ? "question" : u.acceptorToSteal ? "steal" : "coop",
         },
       };
     }
