@@ -3,7 +3,7 @@ import React from "react";
 import Blockies from "react-blockies";
 import { useThemeSwitcher } from "react-css-theme-switcher";
 import { useLookupAddress } from "../hooks";
-
+import { useLocation, useHistory } from "react-router-dom";
 
 // changed value={address} to address={address}
 
@@ -37,6 +37,8 @@ const blockExplorerLink = (address, blockExplorer) =>
 
 export default function Address(props) {
   const address = props.address;
+
+  const history = useHistory();
 
   const ens = useLookupAddress(props.ensProvider, address);
 
@@ -107,7 +109,12 @@ export default function Address(props) {
 
   return (
     <span>
-      <span style={{ verticalAlign: "middle" }}>
+      <span
+        style={{ verticalAlign: "middle", cursor: "pointer" }}
+        onClick={() => {
+          history.push(`/profile/${address}`);
+        }}
+      >
         <Blockies seed={address.toLowerCase()} size={8} scale={props.fontSize ? props.fontSize / 7 : 4} />
       </span>
       <span style={{ verticalAlign: "middle", paddingLeft: 5, fontSize: props.fontSize ? props.fontSize : 28 }}>

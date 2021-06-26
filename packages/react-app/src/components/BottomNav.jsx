@@ -25,10 +25,10 @@ export default function BottomNav() {
   return (
     <>
       <BottomNavigation style={style} showLabels value={location.pathname} onChange={(e, route) => history.push(route)}>
-        <BottomNavigationAction label="Functions" value="/" icon={<Code />} />
-        <BottomNavigationAction label="Players" value="/names" icon={<Group />} />
-        <BottomNavigationAction label="Contracts" value="/contracts" icon={<ListAlt />} />
-        <BottomNavigationAction label="Example" value="/contracts-example" icon={<ListAlt />} />
+        <BottomNavigationAction label="Contracts" value="/" icon={<ListAlt />} />
+        <BottomNavigationAction label="Players" value="/users" icon={<Group />} />
+        <BottomNavigationAction label="Functions" value="/functions" icon={<Code />} />
+        {/* <BottomNavigationAction label="Example" value="/contracts-example" icon={<ListAlt />} /> */}
         {/* <BottomNavigationAction label="Hints" value="/hints" icon={<Restore />} />
         <BottomNavigationAction label="Example UI" value="/exampleui" icon={<Restore />} />
         <BottomNavigationAction label="Mainnet DAI" value="/mainnetdai" icon={<Restore />} /> */}

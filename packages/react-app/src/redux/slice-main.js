@@ -4,6 +4,8 @@ const initialState = {
   users: [],
   contracts: [],
   user: {},
+  id2contract: {},
+  address2ids: {},
 };
 
 const slice = createSlice({

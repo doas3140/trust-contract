@@ -13,16 +13,18 @@ import {
   useUserProvider,
 } from "../hooks";
 import { useSelector, useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
 
 const Item = props => {
   const address = props.address;
+  const history = useHistory();
   // const [address, setAddress] = React.useState();
   // React.useEffect(() => {
   //   props.readContracts.TrustContract.name2address(props.name).then(setAddress);
   // }, []);
 
   return (
-    <ListItem style={{ position: "relative" }} onClick={() => console.log(props.name)}>
+    <ListItem style={{ position: "relative" }} onClick={() => history.push(`/profile/${address}`)}>
       <ListItemAvatar>
         <Avatar variant="rounded">{address && <Blockies seed={address.toLowerCase()} size={10} />}</Avatar>
       </ListItemAvatar>

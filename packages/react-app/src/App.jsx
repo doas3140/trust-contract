@@ -21,9 +21,10 @@ import {
   useOnBlock,
   useUserProvider,
   useContractUpdateListener,
+  useContractCreateListener,
 } from "./hooks";
 // import Hints from "./Hints";
-import { NamesView, ContractsExampleView, ContractsView } from "./views";
+import { NamesView, ContractsExampleView, ContractsView, ProfileView } from "./views";
 import { useSelector, useDispatch } from "react-redux";
 import { ReduxMain } from "./redux/slice-main";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -137,6 +138,7 @@ function App(props) {
   const users = joiners.map(o => ({ address: o[0], name: o[1] }));
 
   const updates = useContractUpdateListener(readContracts, localProvider);
+  const creates = useContractCreateListener(readContracts, localProvider);
   // Start fetching data
   React.useEffect(() => {
     dispatch(ReduxMain.setState({ users }));
@@ -247,35 +249,36 @@ function App(props) {
 
   return (
     <div className="App">
-      {/* ✏️ Edit the header and change the title to your project name */}
-      <Header />
-      {DEBUG && networkDisplay}
+      <BrowserRouter>
+        {/* ✏️ Edit the header and change the title to your project name */}
+        <Header />
+        {DEBUG && networkDisplay}
 
-      {user.loading ? (
-        <div
-          style={{ height: "100vh", width: "100vw", display: "flex", alignItems: "center", justifyContent: "center" }}
-        >
-          <CircularProgress />
-        </div>
-      ) : user.name ? (
-        <BrowserRouter>
-          <Switch>
-            <Route exact path="/">
-              {/*
+        {user.loading ? (
+          <div
+            style={{ height: "100vh", width: "100vw", display: "flex", alignItems: "center", justifyContent: "center" }}
+          >
+            <CircularProgress />
+          </div>
+        ) : user.name ? (
+          <>
+            <Switch>
+              <Route exact path="/functions">
+                {/*
                 🎛 this scaffolding is full of commonly used components
                 this <Contract/> component will automatically parse your ABI
                 and give you a form to interact with it locally
             */}
 
-              <Contract
-                name="TrustContract"
-                signer={userProvider.getSigner()}
-                provider={localProvider}
-                address={address}
-                blockExplorer={blockExplorer}
-              />
+                <Contract
+                  name="TrustContract"
+                  signer={userProvider.getSigner()}
+                  provider={localProvider}
+                  address={address}
+                  blockExplorer={blockExplorer}
+                />
 
-              {/* uncomment for a second contract:
+                {/* uncomment for a second contract:
             <Contract
               name="SecondContract"
               signer={userProvider.getSigner()}
@@ -285,7 +288,7 @@ function App(props) {
             />
             */}
 
-              {/* Uncomment to display and interact with an external contract (DAI on mainnet):
+                {/* Uncomment to display and interact with an external contract (DAI on mainnet):
             <Contract
               name="DAI"
               customContract={mainnetDAIContract}
@@ -295,68 +298,72 @@ function App(props) {
               blockExplorer={blockExplorer}
             />
             */}
-            </Route>
-            <Route path="/names">
-              <NamesView readContracts={readContracts} />
-            </Route>
-            <Route path="/contracts">
-              <ContractsView readContracts={readContracts} writeContracts={writeContracts} />
-            </Route>
-            <Route path="/contracts-example">
-              <ContractsExampleView readContracts={readContracts} />
-            </Route>
-          </Switch>
+              </Route>
+              <Route path="/users">
+                <NamesView readContracts={readContracts} />
+              </Route>
+              <Route path="/">
+                <ContractsView readContracts={readContracts} writeContracts={writeContracts} />
+              </Route>
+              <Route path="/contracts-example">
+                <ContractsExampleView readContracts={readContracts} />
+              </Route>
+              <Route path="/profile/:address">
+                <ProfileView readContracts={readContracts} writeContracts={writeContracts} address={address} />
+              </Route>
+            </Switch>
 
-          <BottomNav />
-        </BrowserRouter>
-      ) : (
-        <div
-          style={{
-            height: "calc(100vh - 100px)",
-            flexDirection: "column",
-            width: "100vw",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          Your account is not initialized!
-          <Paper
-            component="form"
-            style={{ marginTop: 10, padding: "2px 4px", display: "flex", alignItems: "center", width: 400 }}
+            <BottomNav />
+          </>
+        ) : (
+          <div
+            style={{
+              height: "calc(100vh - 100px)",
+              flexDirection: "column",
+              width: "100vw",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
           >
-            <InputBase
-              value={inp}
-              onChange={e => setInp(e.target.value)}
-              placeholder="Enter your name"
-              style={{ marginLeft: 4, flex: 1 }}
-            />
-            <Divider orientation="vertical" style={{ height: 28, margin: 4 }} />
-            <MuiButton
-              onClick={async () => {
-                try {
-                  console.log("[", readContracts.TrustContract.on);
-                  await writeContracts.TrustContract.joinNetwork(inp);
-                  dispatch(ReduxMain.refreshMyUser(readContracts, address));
-                } catch (e) {
-                  notification.error({
-                    message: "Transaction Error",
-                    description: e.message.replace("VM Exception while processing transaction: revert", ""),
-                  });
-                }
-                // readContracts.TrustContract.name2address(props.name).then(setAddress);
-              }}
+            Your account is not initialized!
+            <Paper
+              component="form"
+              style={{ marginTop: 10, padding: "2px 4px", display: "flex", alignItems: "center", width: 400 }}
             >
-              JOIN
-            </MuiButton>
-          </Paper>
-        </div>
-      )}
+              <InputBase
+                value={inp}
+                onChange={e => setInp(e.target.value)}
+                placeholder="Enter your name"
+                style={{ marginLeft: 4, flex: 1 }}
+              />
+              <Divider orientation="vertical" style={{ height: 28, margin: 4 }} />
+              <MuiButton
+                onClick={async () => {
+                  try {
+                    console.log("[", readContracts.TrustContract.on);
+                    await writeContracts.TrustContract.joinNetwork(inp);
+                    dispatch(ReduxMain.refreshMyUser(readContracts, address));
+                  } catch (e) {
+                    notification.error({
+                      message: "Transaction Error",
+                      description: e.message.replace("VM Exception while processing transaction: revert", ""),
+                    });
+                  }
+                  // readContracts.TrustContract.name2address(props.name).then(setAddress);
+                }}
+              >
+                JOIN
+              </MuiButton>
+            </Paper>
+          </div>
+        )}
+      </BrowserRouter>
 
-      <ThemeSwitch />
+      {/* <ThemeSwitch /> */}
 
       {/* 🗺 Extra UI like gas price, eth price, faucet, and support: */}
-      <div style={{ position: "fixed", textAlign: "left", left: 0, bottom: 20, padding: 10 }}>
+      {/* <div style={{ position: "fixed", textAlign: "left", left: 0, bottom: 20, padding: 10 }}>
         <Row align="middle" gutter={[4, 4]}>
           <Col span={8}>
             <Ramp price={price} address={address} networks={NETWORKS} />
@@ -384,7 +391,6 @@ function App(props) {
         <Row align="middle" gutter={[4, 4]}>
           <Col span={24}>
             {
-              /*  if the local provider has a signer, let's show the faucet:  */
               faucetAvailable ? (
                 <Faucet localProvider={localProvider} price={price} ensProvider={mainnetProvider} />
               ) : (
@@ -393,7 +399,7 @@ function App(props) {
             }
           </Col>
         </Row>
-      </div>
+      </div> */}
     </div>
   );
 }

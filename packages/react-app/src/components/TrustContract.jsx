@@ -28,6 +28,7 @@ import { GiRobber } from "react-icons/gi";
 import { FaRegHandshake, FaQuestion } from "react-icons/fa";
 import { RiLock2Line, RiZzzLine, RiRestTimeLine } from "react-icons/ri";
 import { BiRefresh } from "react-icons/bi";
+import { useHistory } from "react-router-dom";
 
 export const Hidden = props => <div style={{ visibility: "hidden" }}>{props.children}</div>;
 
@@ -198,13 +199,19 @@ const SelectAction = props => {
 };
 
 export default function TrustContract(props) {
+  const history = useHistory();
   const { address, creator, acceptor, value, step } = props;
   const isCreator = creator && address == creator.address;
   const isAcceptor = acceptor && address == acceptor.address;
   // const { users } = useSelector(state => state.main);
   return (
     <ListItem style={{ position: "relative" }} onClick={() => console.log()}>
-      <ListItemAvatar style={{ position: "relative", display: "flex", justifyContent: "center" }}>
+      <ListItemAvatar
+        style={{ position: "relative", display: "flex", justifyContent: "center" }}
+        onClick={() => {
+          history.push(`/profile/${creator.address}`);
+        }}
+      >
         <ButtonBase style={{ position: "absolute", height: "100%", width: "100%", zIndex: 99 }} />
         <Avatar variant="rounded">{<Blockies seed={creator.address.toLowerCase()} size={10} />}</Avatar>
       </ListItemAvatar>
@@ -234,7 +241,7 @@ export default function TrustContract(props) {
           alignItems: "center",
           margin: 4,
           position: "relative",
-          width: 60
+          width: 60,
         }}
       >
         <div>{`${value}￥`}</div>
@@ -291,7 +298,12 @@ export default function TrustContract(props) {
             }
             style={{ textAlign: "right", flex: 1 }}
           />
-          <ListItemAvatar style={{ position: "relative", display: "flex", justifyContent: "center" }}>
+          <ListItemAvatar
+            style={{ position: "relative", display: "flex", justifyContent: "center" }}
+            onClick={() => {
+              history.push(`/profile/${acceptor.address}`);
+            }}
+          >
             <Avatar variant="rounded">{<Blockies seed={acceptor.address.toLowerCase()} size={10} />}</Avatar>
           </ListItemAvatar>
         </>

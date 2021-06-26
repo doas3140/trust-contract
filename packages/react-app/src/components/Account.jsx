@@ -102,7 +102,7 @@ export default function Account({
         "Connecting..."
       )}
       <span>
-        <span style={{ display: "flex", flexDirection: "column", paddingLeft: 2, paddingRight: 2 }}>
+        <span style={{ display: "flex", flexDirection: "column", paddingLeft: 5, paddingRight: 5 }}>
           {user && user.balance && (
             <div style={{ display: "flex", alignItems: "center", height: 28, paddingBottom: 2 }}>
               <Typography.Text style={{ fontSize: 28, color: blackColor, paddingRight: 2 }}>

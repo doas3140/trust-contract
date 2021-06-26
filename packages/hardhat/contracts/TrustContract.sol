@@ -57,17 +57,17 @@ contract TrustContract {
     }
 
     // for testing purposes
-    function transferFrom(
-        address _from,
-        address _to,
-        uint256 _value
-    ) public returns (bool success) {
-        require(address2balance[_from] >= _value, "not enough funds");
-        address2balance[_to] += _value;
-        address2balance[_from] -= _value;
-        emit Transfer(_from, _to, _value); //solhint-disable-line indent, no-unused-vars
-        return true;
-    }
+    // function transferFrom(
+    //     address _from,
+    //     address _to,
+    //     uint256 _value
+    // ) public returns (bool success) {
+    //     require(address2balance[_from] >= _value, "not enough funds");
+    //     address2balance[_to] += _value;
+    //     address2balance[_from] -= _value;
+    //     emit Transfer(_from, _to, _value); //solhint-disable-line indent, no-unused-vars
+    //     return true;
+    // }
 
     // Init
     struct Info {
@@ -134,6 +134,10 @@ contract TrustContract {
         // other
         uint step
     );
+    event ContractCreate(
+        address creator,
+        uint256 id
+    );
 
     function emitContractUpdate(TContract memory c) private {
         id2contract[c.id] = c;
@@ -186,6 +190,7 @@ contract TrustContract {
         address2balance[msg.sender] -= value;
         address2balance[name2address[info.bank]] += value;
         emitContractUpdate(c);
+        emit ContractCreate(msg.sender, c.id);
         address2contractids[msg.sender].push(c.id);
         address2contractcount[msg.sender] += 1;
         contractsCount += 1;
