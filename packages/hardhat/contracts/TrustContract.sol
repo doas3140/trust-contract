@@ -257,13 +257,13 @@ contract TrustContract {
         } else if (c.creator.toSteal && !c.acceptor.toSteal) {
             uint change = c.value*2;
             c.acceptor.balanceChange = -int256(c.value);
-            c.creator.balanceChange = int256(change);
+            c.creator.balanceChange = int256(c.value);
             address2balance[creator] += change;
             address2balance[bank] -= change;
         } else if (!c.creator.toSteal && c.acceptor.toSteal) {
             uint change = c.value*2;
             c.creator.balanceChange = -int256(c.value);
-            c.acceptor.balanceChange = int256(change);
+            c.acceptor.balanceChange = int256(c.value);
             address2balance[acceptor] += change;
             address2balance[bank] -= change;
         } else {

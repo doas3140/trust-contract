@@ -223,7 +223,7 @@ export default function TrustContract(props) {
         style={{ flex: 1 }}
       />
 
-      <ShowAction action={creator.action} />
+      <ShowAction action={!(step == 2 && isCreator) && creator.action} />
 
       <div
         style={{
@@ -234,6 +234,7 @@ export default function TrustContract(props) {
           alignItems: "center",
           margin: 4,
           position: "relative",
+          width: 60
         }}
       >
         <div>{`${value}￥`}</div>
@@ -241,18 +242,17 @@ export default function TrustContract(props) {
         {/* DONT MIND ME (just using position relative element for easier placment) :) */}
         {step == 2 && isCreator && (
           <SelectAction
-            onCreatorAccept={action => {}}
+            onCreatorAccept={action => props.onCreatorAccept(action)}
             step={step}
-            style={{ position: "absolute", top: -5, right: 50 }}
+            style={{ position: "absolute", top: -8, right: 62 }}
             onAccept={action => props.onCreatorAccept(action)}
           />
         )}
         {step == 3 && isAcceptor && (
           <SelectAction
-            onAcceptorVerify={(action, passphrase) => {}}
+            onAcceptorVerify={(action, passphrase) => props.onAcceptorVerify(action, passphrase)}
             step={step}
-            style={{ position: "absolute", top: -5, left: 50 }}
-            onAccept={action => props.onCreatorAccept(action)}
+            style={{ position: "absolute", top: -8, left: 62 }}
           />
         )}
       </div>
@@ -267,7 +267,7 @@ export default function TrustContract(props) {
             </ListItemAvatar>
           </Hidden>
           <SelectAction
-            onAcceptorAccept={(action, passphrase) => {}}
+            onAcceptorAccept={(action, passphrase) => props.onAcceptorAccept(action, passphrase)}
             step={step}
             style={{ [isCreator && "visibility"]: "hidden" }}
             onAccept={action => props.onAccept(action)}

@@ -19,7 +19,7 @@ export default function useContractUpdateListener(readContracts, localProvider) 
           address: u.creator,
           oldBalance: Number(u.creatorOldBalance),
           balanceChange: u.step > 3 && Number(u.creatorBalanceChange),
-          action: u.step > 2 && (u.creatorToSteal ? "steal" : "coop"),
+          action: u.step < 4 ? "question" : u.creatorToSteal ? "steal" : "coop",
         },
         acceptor: u.step > 1 && {
           address: u.acceptor,

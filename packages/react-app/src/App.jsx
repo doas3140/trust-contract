@@ -20,7 +20,7 @@ import {
   useGasPrice,
   useOnBlock,
   useUserProvider,
-  useContractUpdateListener
+  useContractUpdateListener,
 } from "./hooks";
 // import Hints from "./Hints";
 import { NamesView, ContractsExampleView, ContractsView } from "./views";
@@ -57,7 +57,7 @@ import { notification } from "antd";
 export const targetNetwork = NETWORKS.localhost; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
 // 😬 Sorry for all the console logging
-const DEBUG = true;
+const DEBUG = false;
 
 // 🛰 providers
 if (DEBUG) console.log("📡 Connecting to Mainnet Ethereum");
@@ -300,7 +300,7 @@ function App(props) {
               <NamesView readContracts={readContracts} />
             </Route>
             <Route path="/contracts">
-              <ContractsView readContracts={readContracts} />
+              <ContractsView readContracts={readContracts} writeContracts={writeContracts} />
             </Route>
             <Route path="/contracts-example">
               <ContractsExampleView readContracts={readContracts} />
