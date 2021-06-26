@@ -64,6 +64,7 @@ const web3Modal = new Web3Modal({
 
 const logoutOfWeb3Modal = async () => {
   localStorage.clear();
+  window.localStorage.removeItem("loggedIn");
   await web3Modal.clearCachedProvider();
   setTimeout(() => {
     window.location.reload();
@@ -90,6 +91,7 @@ export default function Header() {
 
   const loadWeb3Modal = useCallback(async () => {
     const provider = await web3Modal.connect();
+    window.localStorage.setItem("loggedIn", true);
     setInjectedProvider(new Web3Provider(provider));
   }, [setInjectedProvider]);
 
@@ -129,11 +131,12 @@ export default function Header() {
 
   const { currentTheme } = useThemeSwitcher();
 
+  const loggedIn = window.localStorage.getItem("loggedIn") || false;
+
   return (
     <>
       <Hidden>
-        <AppBar position="relative" style={{height:80}}>
-        </AppBar>
+        <AppBar position="relative" style={{ height: 80 }}></AppBar>
       </Hidden>
       <AppBar
         style={{
@@ -168,6 +171,7 @@ export default function Header() {
               loadWeb3Modal={loadWeb3Modal}
               logoutOfWeb3Modal={logoutOfWeb3Modal}
               blockExplorer={blockExplorer}
+              minimized={!loggedIn}
             />
           </div>
           <div style={{ position: "fixed", textAlign: "right", right: 0, bottom: 100, padding: 10 }}>{faucetHint}</div>

@@ -29,7 +29,7 @@ contract TrustContract {
         name2exists[joinersName] = true;
         name2address[joinersName] = msg.sender;
         address2exists[msg.sender] = true;
-        address2balance[msg.sender] = 100;
+        address2balance[msg.sender] = 0;
         address2name[msg.sender] = joinersName;
         address2contractcount[msg.sender] = 0;
         emit JoinNetwork(msg.sender, joinersName);

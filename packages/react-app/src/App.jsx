@@ -35,25 +35,6 @@ import Divider from "@material-ui/core/Divider";
 import MuiButton from "@material-ui/core/Button";
 import { notification } from "antd";
 
-/*
-    Welcome to 🏗 scaffold-eth !
-
-    Code:
-    https://github.com/austintgriffith/scaffold-eth
-
-    Support:
-    https://t.me/joinchat/KByvmRe5wkR-8F_zz6AjpA
-    or DM @austingriffith on twitter or telegram
-
-    You should get your own Infura.io ID and put it in `constants.js`
-    (this is your connection to the main Ethereum network for ENS etc.)
-
-
-    🌏 EXTERNAL CONTRACTS:
-    You can also bring in contract artifacts in `constants.js`
-    (and then use the `useExternalContractLoader()` hook!)
-*/
-
 /// 📡 What chain are your contracts deployed to?
 export const targetNetwork = NETWORKS.localhost; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
@@ -247,6 +228,8 @@ function App(props) {
 
   const faucetAvailable = localProvider && localProvider.connection && targetNetwork.name === "localhost";
 
+  const loggedIn = window.localStorage.getItem("loggedIn") || false;
+
   return (
     <div className="App">
       <BrowserRouter>
@@ -254,31 +237,38 @@ function App(props) {
         <Header />
         {DEBUG && networkDisplay}
 
-        {user.loading ? (
-          <div
-            style={{ height: "100vh", width: "100vw", display: "flex", alignItems: "center", justifyContent: "center" }}
-          >
-            <CircularProgress />
-          </div>
-        ) : user.name ? (
-          <>
-            <Switch>
-              <Route exact path="/functions">
-                {/*
+        {loggedIn ? (
+          user.loading ? (
+            <div
+              style={{
+                height: "100vh",
+                width: "100vw",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <CircularProgress />
+            </div>
+          ) : user.name ? (
+            <>
+              <Switch>
+                <Route exact path="/functions">
+                  {/*
                 🎛 this scaffolding is full of commonly used components
                 this <Contract/> component will automatically parse your ABI
                 and give you a form to interact with it locally
             */}
 
-                <Contract
-                  name="TrustContract"
-                  signer={userProvider.getSigner()}
-                  provider={localProvider}
-                  address={address}
-                  blockExplorer={blockExplorer}
-                />
+                  <Contract
+                    name="TrustContract"
+                    signer={userProvider.getSigner()}
+                    provider={localProvider}
+                    address={address}
+                    blockExplorer={blockExplorer}
+                  />
 
-                {/* uncomment for a second contract:
+                  {/* uncomment for a second contract:
             <Contract
               name="SecondContract"
               signer={userProvider.getSigner()}
@@ -288,7 +278,7 @@ function App(props) {
             />
             */}
 
-                {/* Uncomment to display and interact with an external contract (DAI on mainnet):
+                  {/* Uncomment to display and interact with an external contract (DAI on mainnet):
             <Contract
               name="DAI"
               customContract={mainnetDAIContract}
@@ -298,23 +288,66 @@ function App(props) {
               blockExplorer={blockExplorer}
             />
             */}
-              </Route>
-              <Route path="/users">
-                <NamesView readContracts={readContracts} />
-              </Route>
-              <Route path="/">
-                <ContractsView readContracts={readContracts} writeContracts={writeContracts} />
-              </Route>
-              <Route path="/contracts-example">
-                <ContractsExampleView readContracts={readContracts} />
-              </Route>
-              <Route path="/profile/:address">
-                <ProfileView readContracts={readContracts} writeContracts={writeContracts} address={address} />
-              </Route>
-            </Switch>
+                </Route>
+                <Route path="/users">
+                  <NamesView readContracts={readContracts} />
+                </Route>
+                <Route path="/">
+                  <ContractsView readContracts={readContracts} writeContracts={writeContracts} />
+                </Route>
+                <Route path="/contracts-example">
+                  <ContractsExampleView readContracts={readContracts} />
+                </Route>
+                <Route path="/profile/:address">
+                  <ProfileView readContracts={readContracts} writeContracts={writeContracts} address={address} />
+                </Route>
+              </Switch>
 
-            <BottomNav />
-          </>
+              <BottomNav />
+            </>
+          ) : (
+            <div
+              style={{
+                height: "calc(100vh - 100px)",
+                flexDirection: "column",
+                width: "100vw",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              Your account is not initialized!
+              <Paper
+                component="form"
+                style={{ marginTop: 10, padding: "2px 4px", display: "flex", alignItems: "center", width: 400 }}
+              >
+                <InputBase
+                  value={inp}
+                  onChange={e => setInp(e.target.value)}
+                  placeholder="Enter your name"
+                  style={{ marginLeft: 4, flex: 1 }}
+                />
+                <Divider orientation="vertical" style={{ height: 28, margin: 4 }} />
+                <MuiButton
+                  onClick={async () => {
+                    try {
+                      console.log("[", readContracts.TrustContract.on);
+                      await writeContracts.TrustContract.joinNetwork(inp);
+                      dispatch(ReduxMain.refreshMyUser(readContracts, address));
+                    } catch (e) {
+                      notification.error({
+                        message: "Transaction Error",
+                        description: e.message.replace("VM Exception while processing transaction: revert", ""),
+                      });
+                    }
+                    // readContracts.TrustContract.name2address(props.name).then(setAddress);
+                  }}
+                >
+                  JOIN
+                </MuiButton>
+              </Paper>
+            </div>
+          )
         ) : (
           <div
             style={{
@@ -326,36 +359,7 @@ function App(props) {
               justifyContent: "center",
             }}
           >
-            Your account is not initialized!
-            <Paper
-              component="form"
-              style={{ marginTop: 10, padding: "2px 4px", display: "flex", alignItems: "center", width: 400 }}
-            >
-              <InputBase
-                value={inp}
-                onChange={e => setInp(e.target.value)}
-                placeholder="Enter your name"
-                style={{ marginLeft: 4, flex: 1 }}
-              />
-              <Divider orientation="vertical" style={{ height: 28, margin: 4 }} />
-              <MuiButton
-                onClick={async () => {
-                  try {
-                    console.log("[", readContracts.TrustContract.on);
-                    await writeContracts.TrustContract.joinNetwork(inp);
-                    dispatch(ReduxMain.refreshMyUser(readContracts, address));
-                  } catch (e) {
-                    notification.error({
-                      message: "Transaction Error",
-                      description: e.message.replace("VM Exception while processing transaction: revert", ""),
-                    });
-                  }
-                  // readContracts.TrustContract.name2address(props.name).then(setAddress);
-                }}
-              >
-                JOIN
-              </MuiButton>
-            </Paper>
+            Connect your account first!
           </div>
         )}
       </BrowserRouter>
