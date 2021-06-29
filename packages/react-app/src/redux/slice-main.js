@@ -6,6 +6,7 @@ const initialState = {
   user: {},
   id2contract: {},
   address2ids: {},
+  injectedProvider: undefined,
 };
 
 const slice = createSlice({

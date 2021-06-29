@@ -36,7 +36,7 @@ import MuiButton from "@material-ui/core/Button";
 import { notification } from "antd";
 
 /// 📡 What chain are your contracts deployed to?
-export const targetNetwork = NETWORKS.localhost; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
+export const targetNetwork = NETWORKS["rinkeby"]; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
 // 😬 Sorry for all the console logging
 const DEBUG = false;
@@ -66,12 +66,12 @@ function App(props) {
   const dispatch = useDispatch();
   const mainnetProvider = scaffoldEthProvider && scaffoldEthProvider._network ? scaffoldEthProvider : mainnetInfura;
 
-  const [injectedProvider, setInjectedProvider] = useState();
+  const { user, injectedProvider } = useSelector(state => state.main);
   /* 💵 This hook will get the price of ETH from 🦄 Uniswap: */
   const price = useExchangePrice(targetNetwork, mainnetProvider);
 
   /* 🔥 This hook will get the price of Gas from ⛽️ EtherGasStation */
-  const gasPrice = useGasPrice(targetNetwork, "fast");
+  const gasPrice = useGasPrice(targetNetwork, "fast") / 1000;
   // Use your injected provider from 🦊 Metamask or if you don't have it then instantly generate a 🔥 burner wallet.
   const userProvider = useUserProvider(injectedProvider, localProvider);
   const address = useUserAddress(userProvider);
@@ -99,6 +99,8 @@ function App(props) {
 
   // If you want to make 🔐 write transactions to your contracts, use the userProvider:
   const writeContracts = useContractLoader(userProvider);
+
+  // console.log('[userSigner', userProvider)
 
   // EXTERNAL CONTRACT EXAMPLE:
   //
@@ -173,8 +175,6 @@ function App(props) {
     writeContracts,
     mainnetDAIContract,
   ]);
-
-  const { user } = useSelector(state => state.main);
 
   let networkDisplay = "";
   if (localChainId && selectedChainId && localChainId !== selectedChainId) {
@@ -293,7 +293,7 @@ function App(props) {
                   <NamesView readContracts={readContracts} />
                 </Route>
                 <Route path="/">
-                  <ContractsView readContracts={readContracts} writeContracts={writeContracts} />
+                  <ContractsView readContracts={readContracts} writeContracts={writeContracts} tx={tx} />
                 </Route>
                 <Route path="/contracts-example">
                   <ContractsExampleView readContracts={readContracts} />
@@ -332,7 +332,7 @@ function App(props) {
                   onClick={async () => {
                     try {
                       console.log("[", readContracts.TrustContract.on);
-                      await writeContracts.TrustContract.joinNetwork(inp);
+                      await tx(writeContracts.TrustContract.joinNetwork(inp));
                       dispatch(ReduxMain.refreshMyUser(readContracts, address));
                     } catch (e) {
                       notification.error({

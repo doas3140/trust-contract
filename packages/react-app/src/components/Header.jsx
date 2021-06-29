@@ -17,6 +17,7 @@ import { useThemeSwitcher } from "react-css-theme-switcher";
 import AppBar from "@material-ui/core/AppBar";
 import Blockies from "react-blockies";
 import { useSelector, useDispatch } from "react-redux";
+import { ReduxMain } from "../redux/slice-main";
 
 export const Hidden = props => <div style={{ visibility: "hidden" }}>{props.children}</div>;
 
@@ -72,6 +73,7 @@ const logoutOfWeb3Modal = async () => {
 };
 
 export default function Header() {
+  const dispatch = useDispatch();
   const mainnetProvider = scaffoldEthProvider && scaffoldEthProvider._network ? scaffoldEthProvider : mainnetInfura;
 
   const [injectedProvider, setInjectedProvider] = useState();
@@ -92,7 +94,9 @@ export default function Header() {
   const loadWeb3Modal = useCallback(async () => {
     const provider = await web3Modal.connect();
     window.localStorage.setItem("loggedIn", true);
-    setInjectedProvider(new Web3Provider(provider));
+    const injectedProvider = new Web3Provider(provider);
+    setInjectedProvider(injectedProvider);
+    dispatch(ReduxMain.setState({ injectedProvider }));
   }, [setInjectedProvider]);
 
   useEffect(() => {

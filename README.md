@@ -48,7 +48,7 @@ yarn account
 4. Deploy
 
 ```bash
-yarn deploy
+yarn deploy --network rinkeby
 ```
 
 ## 🌐 Deploy React App
