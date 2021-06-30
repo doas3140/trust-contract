@@ -289,6 +289,9 @@ function App(props) {
             />
             */}
                 </Route>
+                <Route path="/profile/:address">
+                  <ProfileView readContracts={readContracts} writeContracts={writeContracts} address={address} tx={tx} />
+                </Route>
                 <Route path="/users">
                   <NamesView readContracts={readContracts} />
                 </Route>
@@ -297,9 +300,6 @@ function App(props) {
                 </Route>
                 <Route path="/contracts-example">
                   <ContractsExampleView readContracts={readContracts} />
-                </Route>
-                <Route path="/profile/:address">
-                  <ProfileView readContracts={readContracts} writeContracts={writeContracts} address={address} />
                 </Route>
               </Switch>
 

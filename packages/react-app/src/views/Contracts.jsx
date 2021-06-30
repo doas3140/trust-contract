@@ -25,7 +25,7 @@ import AddIcon from "@material-ui/icons/Add";
 import { notification } from "antd";
 
 export default function ContractsView(props) {
-  const { writeContracts, readContracts } = props;
+  const { writeContracts, readContracts, tx } = props;
   const [loading, setLoading] = React.useState(false);
   const { contracts, user } = useSelector(state => state.main);
   const load = async promise => {
@@ -49,7 +49,7 @@ export default function ContractsView(props) {
   const [value, setValue] = React.useState(1);
 
   const handleDialogAccept = () => {
-    writeContracts.TrustContract.createTrustContract(value)
+    tx(writeContracts.TrustContract.createTrustContract(value))
       .then(() => {
         handleClose();
       })
@@ -71,13 +71,15 @@ export default function ContractsView(props) {
               address={user.address}
               {...contract}
               onAcceptorAccept={async (action, passphrase) => {
-                load(writeContracts.TrustContract.acceptorAcceptContract(contract.id, action == "steal", passphrase));
+                load(
+                  tx(writeContracts.TrustContract.acceptorAcceptContract(contract.id, action == "steal", passphrase)),
+                );
               }}
               onCreatorAccept={action => {
-                load(writeContracts.TrustContract.creatorPublishAction(contract.id, action == "steal"));
+                load(tx(writeContracts.TrustContract.creatorPublishAction(contract.id, action == "steal")));
               }}
               onAcceptorVerify={(action, passphrase) => {
-                load(writeContracts.TrustContract.acceptorVerifyAction(contract.id, action == "steal", passphrase));
+                load(tx(writeContracts.TrustContract.acceptorVerifyAction(contract.id, action == "steal", passphrase)));
               }}
             />
           ))}

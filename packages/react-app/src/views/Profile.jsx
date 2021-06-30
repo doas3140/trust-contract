@@ -26,15 +26,15 @@ import { notification, Typography } from "antd";
 import { useHistory, useParams } from "react-router-dom";
 import Blockies from "react-blockies";
 import Divider from "@material-ui/core/Divider";
-import {ReduxMain} from "../redux/slice-main";
+import { ReduxMain } from "../redux/slice-main";
 
 const { Text } = Typography;
 
-export default function ContractsView(props) {
+export default function ProfileView(props) {
   const dispatch = useDispatch();
   const pathParams = useParams();
   const profileAddress = pathParams["address"];
-  const { writeContracts, readContracts } = props;
+  const { writeContracts, readContracts, tx } = props;
   const { id2contract, user, address2ids, users } = useSelector(state => state.main);
 
   const ids = address2ids[profileAddress] || [];
@@ -56,7 +56,8 @@ export default function ContractsView(props) {
     return out;
   };
 
-  const name = users.find(user => user.address == profileAddress).name || "unknown";
+  const foundUser = users.find(user => user.address == profileAddress);
+  const name = (foundUser && foundUser.name) || "unknown";
 
   const [balance, setBalance] = React.useState(undefined);
 
@@ -82,7 +83,7 @@ export default function ContractsView(props) {
   const [address, setAddress] = React.useState(profileAddress);
 
   const handleDialogAccept = () => {
-    writeContracts.TrustContract.transfer(address, value)
+    tx(writeContracts.TrustContract.transfer(address, value))
       .then(() => {
         refreshBalance();
         dispatch(ReduxMain.refreshMyUser(readContracts, props.address));
@@ -130,13 +131,15 @@ export default function ContractsView(props) {
               address={user.address}
               {...contract}
               onAcceptorAccept={async (action, passphrase) => {
-                load(writeContracts.TrustContract.acceptorAcceptContract(contract.id, action == "steal", passphrase));
+                load(
+                  tx(writeContracts.TrustContract.acceptorAcceptContract(contract.id, action == "steal", passphrase)),
+                );
               }}
               onCreatorAccept={action => {
-                load(writeContracts.TrustContract.creatorPublishAction(contract.id, action == "steal"));
+                load(tx(writeContracts.TrustContract.creatorPublishAction(contract.id, action == "steal")));
               }}
               onAcceptorVerify={(action, passphrase) => {
-                load(writeContracts.TrustContract.acceptorVerifyAction(contract.id, action == "steal", passphrase));
+                load(tx(writeContracts.TrustContract.acceptorVerifyAction(contract.id, action == "steal", passphrase)));
               }}
             />
           ))}

@@ -30,7 +30,7 @@ export default function useContractUpdateListener(readContracts, localProvider) 
       };
     }
     const contracts = Object.entries(id2contract)
-      .sort(([k1, v1], [k2, v2]) => k1 - k2)
+      .sort(([k1, v1], [k2, v2]) => k2 - k1)
       .map(c => c[1]);
     dispatch(ReduxMain.setState({ contracts, id2contract }));
   }, [updates.length]);
