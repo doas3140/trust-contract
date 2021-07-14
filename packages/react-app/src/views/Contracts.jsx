@@ -28,6 +28,7 @@ export default function ContractsView(props) {
   const { writeContracts, readContracts, tx } = props;
   const [loading, setLoading] = React.useState(false);
   const { contracts, user } = useSelector(state => state.main);
+  console.log('#', contracts)
   const load = async promise => {
     setLoading(true);
     let out;
